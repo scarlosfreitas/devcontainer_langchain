@@ -1,0 +1,44 @@
+{
+  "name": "devcontainer_langchain",
+  "dockerComposeFile": "./docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/uv:1": {},
+    "ghcr.io/devcontainers/features/desktop-lite:1": {
+            "version": "latest",
+            "password": "senha" // Defina uma senha para a conexão
+        }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-python.mypy-type-checker",
+        "ms-toolsai.jupyter"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "PROJECT_NAME": "devcontainer_langchain",
+    "PYTHON_VERSION": "3.13",
+    "UV_INIT_BARE": "false",
+    "INSTALL_IPYKERNEL": "true"
+  },
+  "postCreateCommand": "make post-create",
+  "mounts": [],
+  // Minha configuração
+  "forwardPorts": [5901, 6080], // 5901 é para o cliente VNC, 6080 é para o Browser
+  "containerEnv": {
+      "DISPLAY": ":1"
+  },
+  "portsAttributes": {
+      "6080": {
+          "label": "Visualizador do Navegador",
+          "onAutoForward": "openBrowser"
+      }
+  }
+}

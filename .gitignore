@@ -1,0 +1,66 @@
+### --- [ Python & Caches ] ---
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.pickle
+.bundle/
+
+### --- [ Ambientes Virtuais ] ---
+.venv/
+venv/
+env/
+bin/
+lib/
+develop-eggs/
+dist/
+build/
+
+### --- [ VS Code & DevContainer ] ---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+.devcontainer/.sys_info
+# Nota: Mantemos o devcontainer.json no Git para padronizar o ambiente do time/freela
+
+### --- [ Jupyter & Data Science ] ---
+# Caches do Jupyter e saídas de células grandes
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+# Se você salvar visualizações pesadas ou estados de kernels
+*.nbconvert.
+.jupyter_notebook_config.py
+
+### --- [ LangGraph & AI Agents ] ---
+# Logs de execução de grafos e estados persistidos localmente
+.langchain/
+.langgraph/
+# Se usar bancos de dados vetoriais locais (ex: ChromaDB, FAISS)
+vector_db/
+*.log
+
+### --- [ Infra & Cloud (DuckDB / AWS / GCP) ] ---
+# Evite subir o banco local do DuckDB ou bases de dados de teste
+*.duckdb
+*.db
+*.sqlite3
+# Credenciais e variáveis de ambiente (CRÍTICO)
+.env
+.env.local
+.env.*.local
+.aws/
+.gcloud/
+# Se usar Terraform/Kubernetes local
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+### --- [ Sistema & Outros ] ---
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak

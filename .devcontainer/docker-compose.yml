@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    image: devcontainer_langchain
+    container_name: devcontainer_langchain
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
