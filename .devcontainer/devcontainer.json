@@ -31,7 +31,12 @@
   "postCreateCommand": "make post-create",
   "mounts": [],
   // Minha configuração
-  "forwardPorts": [5901, 6080], // 5901 é para o cliente VNC, 6080 é para o Browser
+  "forwardPorts": [
+    5901, // 5901 é para o cliente VNC 
+    6080, // 6080 é para o Browser
+    // 7860, // 7860 langflow
+    8888  // 8888 jupyterlab 
+    ], 
   "containerEnv": {
       "DISPLAY": ":1"
   },

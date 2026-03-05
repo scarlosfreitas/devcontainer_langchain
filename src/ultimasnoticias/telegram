@@ -1,0 +1,40 @@
+# locale.setlocale(locale.LC_TIME, "pt_BR.utf8")
+import requests
+
+
+def tg_envia_mensagem(mensagem):
+    token = "8216266402:AAGQC-VACBVgjOrUaBoa9JvNBw8zyBKxysI"
+    chat_id = "6024331508"
+    # mensagem = "Olá! Esta é uma mensagem automática."
+
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+
+    payload = {"chat_id": chat_id, "text": mensagem}
+
+    res = requests.post(url, data=payload)
+
+    if res.status_code == 200:
+        print("Mensagem enviada com sucesso!")
+    else:
+        print("Erro ao enviar:", res.text)
+
+
+def tg_envia_resultados(resultados, fonte):
+    for resultado in reversed(resultados):
+        # print(resultado['txcompleto'])
+        if "sefaz" in resultado.keys():
+            uf = resultado["sefaz"].upper()
+        else:
+            uf = "NOVOS"
+
+        if resultado["enviada"] == 0:
+            texto_mensagem = """[{}][{}] {} {}
+            """.format(
+                uf,
+                fonte.upper(),
+                resultado["txcompleto"],
+                resultado["url"],
+            )
+            print(texto_mensagem)
+            tg_envia_mensagem(texto_mensagem)
+            seta_envio(resultado["hashid"], string_banco, fonte=fonte)
