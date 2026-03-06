@@ -9,6 +9,8 @@ from selenium.webdriver.common.by import By
 class BaseParser:
     @staticmethod
     def text_to_date(text_date):
+        text_date = text_date.lower()
+
         MONTHS = {
             "janeiro": "January",
             "fevereiro": "February",
@@ -38,8 +40,11 @@ class BaseParser:
             return dt.datetime.strptime(text_date, "%d de %B de %Y").date()
 
     @staticmethod
-    def corrige_dois_pontos(texto):
-        # texto = "Olá mundo!"
+    def correct_text(texto):
+        texto = texto.replace(
+            "28 de Fevereiro de 01 de Março", "28 de Fevereiro de 2026"
+        )
+
         if texto.find(":") == -1:
             pattern = r"(2022|2023|2024|2025|2026)"
             texto = re.sub(pattern, r"\1:", texto, count=1)
@@ -50,7 +55,7 @@ class BaseParser:
 class NoticiasParser:
     @staticmethod
     def rec_gran_from_text(texto, uf, url="", verbose=False):
-        texto = BaseParser.corrige_dois_pontos(texto)
+        texto = BaseParser.correct_text(texto)
         registro = {}
         registro["hashid"] = hashlib.sha256(texto.encode()).hexdigest()
         registro["sefaz"] = uf
@@ -60,7 +65,7 @@ class NoticiasParser:
         registro["url"] = url
         registro["tsatualizacao"] = dt.datetime.now()
 
-        if not verbose:
+        if verbose:
             print("reg_gran_from_text: ", registro)
 
         return registro
@@ -74,7 +79,7 @@ class NoticiasParser:
         registro["url"] = url
         registro["tsatualizacao"] = dt.datetime.now()
 
-        if not verbose:
+        if verbose:
             print("reg_fcc_from_text: ", registro)
 
         return registro
@@ -92,7 +97,7 @@ class NoticiasParser:
         registro["url"] = url
         registro["tsatualizacao"] = dt.datetime.now()
 
-        if not verbose:
+        if verbose:
             print("rec_cebraspe_from_text: ", registro)
 
         return registro
@@ -106,7 +111,7 @@ class NoticiasParser:
         registro["url"] = url
         registro["tsatualizacao"] = dt.datetime.now()
 
-        if not verbose:
+        if verbose:
             print("rec_cebraspe_novos_from_text: ", registro)
 
         return registro
@@ -120,7 +125,7 @@ class NoticiasParser:
                 texto, uf, url=url, verbose=verbose
             )
         elif "cebraspe_novos" == fonte:
-            return NoticiasParser.rec_cebraspe_from_text(
+            return NoticiasParser.rec_cebraspe_novos_from_text(
                 texto, url=url, verbose=verbose
             )
         else:
@@ -137,7 +142,7 @@ class NoticiasParser:
         lista_li = ul_posterior[0].find_elements(By.XPATH, "./li")
         lista_texto = [elemento.text for elemento in lista_li]
 
-        if not verbose:
+        if verbose:
             print("gran_list_text: ", lista_texto)
 
         return lista_texto
@@ -148,7 +153,7 @@ class NoticiasParser:
         lista_div_item = div_link_arquivo[0].find_elements(By.XPATH, "./div")
         lista_texto = [elemento.text for elemento in lista_div_item]
 
-        if not verbose:
+        if verbose:
             print("fcc_linkarquivo_list_text: ", lista_texto)
 
         return lista_texto
@@ -169,7 +174,7 @@ class NoticiasParser:
         else:
             lista_texto = []
 
-        if not verbose:
+        if verbose:
             print("fcc_publicacao_list_text: ", lista_texto)
 
         return lista_texto
@@ -191,7 +196,7 @@ class NoticiasParser:
                 lista_texto = lista_texto + [li.text for li in lista_li_links]
                 # lista_texto
 
-        if not verbose:
+        if verbose:
             print("cebraspe_list_text: ", lista_texto)
 
         return lista_texto
@@ -211,7 +216,7 @@ class NoticiasParser:
             ]
             # lista_texto
 
-        if not verbose:
+        if verbose:
             print("cebraspe_novos_list_text: ", lista_texto)
 
         return lista_texto

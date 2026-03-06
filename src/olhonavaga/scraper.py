@@ -72,7 +72,7 @@ class OlhoNaVaga:
             By.XPATH, '//div[@id="form:tabView:dataTable0_paginator_top"]'
         )
 
-        bt = div_paginador.find_element(
+        div_paginador.find_element(
             By.XPATH, './/a[contains(@class, "ui-paginator-' + tp_navegacao + '")]'
         ).click()
 

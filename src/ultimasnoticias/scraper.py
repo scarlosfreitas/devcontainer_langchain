@@ -1,8 +1,12 @@
-# from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 import time
+
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
 from .browser import get_uc_driver
 from .parser import NoticiasParser as np
+from .storage import Storage
 
 
 class Noticias:
@@ -27,17 +31,19 @@ class Noticias:
     def __init__(self, headless=False):
         self.driver, self.wait = get_uc_driver(headless)
 
-    def get_url(self, fonte='gran',uf="df", verbose=False):
-        if fonte == 'fcc':
+    def get_url(self, fonte="gran", uf="df", verbose=False):
+        if "fcc" in fonte:
             url = self.FCC_URL[uf]
-        elif fonte == 'cebraspe':
+        elif fonte == "cebraspe":
             url = self.CEBRASPE_URL[uf]
-        elif fonte == 'cebraspe_novos':
+        elif fonte == "cebraspe_novos":
             url = "https://www.cebraspe.org.br/concursos/novos"
         else:
             # GRAN
             if uf == "pa":
-                url_base = "https://blog.grancursosonline.com.br/concurso-sefa-{}/#situacao"
+                url_base = (
+                    "https://blog.grancursosonline.com.br/concurso-sefa-{}/#situacao"
+                )
                 url = url_base.format(uf)
             else:
                 url_base = (
@@ -45,67 +51,60 @@ class Noticias:
                 )
                 url = url_base.format(uf)
 
-        if not verbose:
-            print("{} url: {}".format(fonte,uf))
-        
+        if verbose:
+            print("{} url: {}".format(fonte, url))
+
         return url
 
-    def busca_novidade(self, fonte="cebraspe", uf='df', verbose=False):
-        url = self.get_url(fonte,uf,verbose)
+    # @retry(
+    #     stop=stop_after_attempt(1),
+    #     wait=wait_fixed(1),
+    #     retry=retry_if_exception_type(Exception),
+    # )
+    def busca_novidade(self, fonte="cebraspe", uf="df", verbose=False):
+        url = self.get_url(fonte, uf, verbose=verbose)
 
         # Acessa a página protegida
         self.driver.get(url)
 
         # Espera resposta
-        self.wait_load()
+        self.wait_load(verbose=verbose)
 
         lista_noticias = []
-        for elemento_texto in np.list_text(self.driver, fonte=fonte, verbose=verbose):
-            registro = get_registro_from_texto(
-                elemento_texto, sefaz, fonte=fonte, url=url
-            )
+        for list_text in np.list_text(self.driver, fonte=fonte, verbose=verbose):
+            registro = np.rec_from_text(list_text, uf, fonte=fonte, url=url)
 
             # Consulta Banco de dados
-            # print(registro['hashid'],fonte)
-            lista_resultados = get_registro(
-                registro["hashid"], string_banco, fonte=fonte
-            )
+            db = Storage()
+            lista_resultados = db.read(registro["hashid"], fonte=fonte, verbose=verbose)
             if len(lista_resultados) == 0:
-                insere_registro(registro, string_banco, fonte=fonte)
-                if not modo_silencioso:
-                    print(sefaz, registro["txcompleto"])
+                db.insert(registro, fonte=fonte, verbose=verbose)
+                if verbose:
+                    print(uf, registro["txcompleto"])
             else:
-                if not modo_silencioso:
+                if verbose:
                     print(".", end=".")
 
             lista_noticias.append(registro)
 
-        if not modo_silencioso:
-            print()
+        if verbose:
+            print("busca_novidade", fonte, uf)
 
+    def busca_lista(self, fonte="gran", lista_uf=["df"], verbose=False):
+        for uf in lista_uf:
+            self.busca_novidade(fonte=fonte, uf=uf, verbose=verbose)
 
-    def busca_novidade(self, fonte="gran", lista_uf=["df"], verbose=False):
-        self.get_url(fonte,uf,verbose)
-
-        # Acessa a página protegida
-        self.driver.get(url)
-
-        # Espera resposta
-        self.wait_load()
-
-        for sefaz in lista_sefaz:
-
-
-
+        if verbose:
+            print("busca_lista", fonte, lista_uf)
 
     # Espera resposta
-    def wait_load(self, timeout=20):
+    def wait_load(self, timeout=20, verbose=False):
         last_count = -1
         start_time = time.time()
         retry_timeout = 0.5
 
         # Pode ser parametro da função
-        selector = "table tr"
+        selector = "div"
 
         while True:
             page_state = self.driver.execute_script("return document.readyState;")
@@ -113,15 +112,26 @@ class Noticias:
                 break
             time.sleep(retry_timeout)
 
+        ActionChains(self.driver).send_keys(Keys.ESCAPE).perform()
+        ActionChains(self.driver).send_keys(Keys.ESCAPE).perform()
+
         while time.time() - start_time < timeout:
             current_count = len(self.driver.find_elements(By.CSS_SELECTOR, selector))
             if current_count > 0 and current_count == last_count:
-                print(
-                    "Pagina Estabilizada. [readyState]: {} [count elements]: {}".format(
-                        page_state, current_count
+                if verbose:
+                    print(
+                        "Pagina Estabilizada. [readyState]: {} [count elements]: {}".format(
+                            page_state, current_count
+                        )
                     )
-                )
                 return True  # O número de elementos estabilizou
+            else:
+                if verbose:
+                    print(
+                        "Pagina não estabilizada. [readyState]: {} [count elements]: {}".format(
+                            page_state, current_count
+                        )
+                    )
             last_count = current_count
             time.sleep(retry_timeout)
 

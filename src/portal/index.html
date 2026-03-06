@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Controle noVNC</title>
+    <style>
+        /* Remove margens padrão e define altura total */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: sans-serif;
+            overflow: hidden; /* Evita scroll duplo */
+        }
+
+        /* Container principal com Flexbox */
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Menu Lateral Fixo */
+        .sidebar {
+            width: 200px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sidebar h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 10px;
+        }
+
+        .menu-item {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 4px;
+            background: #34495e;
+            text-align: center;
+        }
+
+        .menu-item:hover {
+            background: #3498db;
+        }
+
+        /* Área do Iframe */
+        .main-content {
+            flex-grow: 1; /* Ocupa o resto do espaço */
+            background-color: #eee;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <nav class="sidebar">
+            <h2>Navegação</h2>
+            <a href="#" class="menu-item">Dashboard</a>
+            <a href="http://localhost:6080/" target="vnc-frame" class="menu-item">Recarregar VNC</a>
+            <div style="margin-top: auto; font-size: 0.8rem; color: #bdc3c7;">
+                Status: Conectado
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <iframe 
+                name="vnc-frame"
+                src="http://localhost:6080/vnc.html?autoconnect=true&reconnect=true" 
+                title="noVNC Desktop">
+            </iframe>
+        </main>
+    </div>
+
+</body>
+</html>
