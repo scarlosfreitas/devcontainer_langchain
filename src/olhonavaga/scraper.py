@@ -97,8 +97,8 @@ class OlhoNaVaga:
             self.page_action("first")
             self.wait_load()
 
-        # Atualiza a pagina corrent
-        # self.num_insert, self.current_page, self.num_pages = self.page_info()
+        # Obtem informações de navegação
+        self.num_insert, self.current_page, self.num_pages = rp.page_info(self)
 
         print(
             "Fisco: {} Inserções: {} Pagina: {}/{}".format(

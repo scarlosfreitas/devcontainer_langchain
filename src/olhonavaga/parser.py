@@ -16,7 +16,7 @@ class RankingParser:
             .text.split()[0]
             .replace(".", "")
         )
-        num_pages = num_insert // 50 + 1
+        num_pages = (num_insert - 1) // 50 + 1
         current_page = int(
             div_paginador.find_element(
                 By.XPATH, './/a[contains(@class,"ui-state-active")]'
