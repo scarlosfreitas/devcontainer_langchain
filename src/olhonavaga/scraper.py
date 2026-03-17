@@ -22,8 +22,8 @@ class OlhoNaVaga:
         "sefaz-pr": {"link": "https://olhonavaga.com.br/rankings/ranking?id=79110"},
         "sefaz-pe": {"link": "https://olhonavaga.com.br/rankings/ranking?id=49551"},
         "sefaz-mg": {"link": "https://olhonavaga.com.br/rankings/ranking?id=47050"},
-        "sefaz-mt": {"link": "https://olhonavaga.com.br/rankings/ranking?id=52584"},
         "sefaz-sp": {"link": "https://olhonavaga.com.br/rankings/ranking?id=86896"},
+        "sefaz-mt": {"link": "https://olhonavaga.com.br/rankings/ranking?id=87726"},
     }
 
     def __init__(self, headless=False):
