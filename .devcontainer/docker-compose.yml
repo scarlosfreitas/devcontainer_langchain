@@ -5,6 +5,8 @@ services:
     build: .
     image: devcontainer_langchain
     container_name: devcontainer_langchain
+    environment:
+      - TZ=America/Sao_Paulo
     volumes:
       - ..:/workspace:cached
     command: sleep infinity
